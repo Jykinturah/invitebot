@@ -1,0 +1,22 @@
+{
+    "token": "[Discord Bot Token]",
+    "embedColor": "#7289DA",
+    "emojiID": "[Report Emoji ID]",
+    "guildID": "[Discord Server ID]",
+    "channelID": "[Discord Report Channel ID]",
+    "message": "Thank you for your report! Our mod team will get to it as soon as possible.",
+    "movieID": "[]",
+    "modID": "[Discord Moderator Role ID]",
+    "communityID": "[Discord Community Role ID]",
+    "prefix": "!",
+    "inviteID": "[Discord New Invites Channel ID]",
+    "modmailID": "[Discord Invites Modmail Channel ID]",
+	"clientId": "[Reddit API Client ID]",
+    "clientSecret": "[Reddit API Client Sercet]",
+    "refreshToken": "[Reddit API Refresh Token]",
+    "intervalModmail": "30",
+    "intervalPrune": "3600",
+    "shameID": "[Discord Shame Role ID]",
+    "reportID": "[Discord Reports Channel ID]",
+    "inviteLogID": "[Discord Invite Log Channel ID]"
+}

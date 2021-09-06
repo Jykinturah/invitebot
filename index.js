@@ -1,7 +1,32 @@
-const Discord = require('discord.js');
+'use strict';
+const { Discord, Intents } = require('discord.js');
 const config = require('./config.json');
 const snoowrap = require('snoowrap');
-const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
+
+/** Intents are currently very permissive to guarantee functionality 
+ * 
+ * GUILDS
+ * 	In my experience, bot won't work without this Intent.
+ * GUILD_MEMBERS
+ * 	Same as above.
+ * GUILD_EMOJIS_AND_STICKERS
+ * 	Emojis are used to capture reports and for the invite verification system.
+ * GUILD_INTEGRATIONS
+ * 	May not be needed but adding just in case.
+ * GUILD_INVITES
+ * 	Bot produces invite links.
+ * GUILD_MESSAGES
+ * 	Bot sends and checks embed messages, along with reported messages.
+ * GUILD_MESSAGE_REACTIONS
+ * 	Bot uses reactions for report system aned for the invite verifications system.
+*/
+
+const client = new Discord.Client({ 
+	partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, 
+		Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_MESSAGES, 
+		Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
+});
 
 var intervalPrune = (config.intervalPrune * 1000);
 var intervalModmail = (config.intervalModmail * 1000);
@@ -11,17 +36,19 @@ client.once('ready', () => {
 });
 
 client.on('ready', () => {
-	pruneMembers();
+	Members();
 	client.setInterval(pruneMembers, intervalPrune);
 	getModmail();
 	client.setInterval(getModmail, intervalModmail);
 });
 
+/** Prune Members of Server with 7 Days of Inactivity */
 function pruneMembers() {
 	let guild = client.guilds.cache.get(config.guildID);
 	guild.members.prune({ days: 7 });
 };
 
+/** Reddit API Wrapper */
 const r = new snoowrap({
 	userAgent: 'invite-bot',
 	clientId: config.clientId,
@@ -29,22 +56,25 @@ const r = new snoowrap({
 	refreshToken: config.refreshToken
 });
 
+/** Reddit API Mod Mail Check, for Invite Requests */
+/* Note: May put some parameters here into config.json. */
 function getModmail() {
 	r.getSubreddit('GGDiscordInvites').getNewModmailConversations({limit: 1}).then(modmail => {
 		if (modmail[0].messages[0].author.name.name === 'GirlGamersDiscord') return;
 		const inviteEmbed = new Discord.MessageEmbed()
-		.setColor(config.embedColor)
-		.setTitle(modmail[0].subject)
-		.addFields(
-			{name: 'Message', value: modmail[0].messages[0].bodyMarkdown},
-			{name: 'Author', value: modmail[0].messages[0].author.name.name, inline: true},
-			{name: 'Profile', value: `[Go to Overview](https://www.reddit.com/user/${modmail[0].messages[0].author.name.name}) ➡`, inline: true},
-			{name: 'Thread ID', value: modmail[0].id, inline: true},
-		)
-		.addFields(
-			{name: 'Link', value: `[Go to Thread](https://mod.reddit.com/mail/all/${modmail[0].id}) ➡`, inline: true},
-			{name: 'Responses', value: `✅ Accept | 👨 Man | ℹ Request Info | 🔄 Resend Invite \n 🔥 Archive | ❓ Second Opinion`}
-		)
+			.setColor(config.embedColor)
+			.setTitle(modmail[0].subject)
+			.addFields(
+				{name: 'Message', value: modmail[0].messages[0].bodyMarkdown},
+				{name: 'Author', value: modmail[0].messages[0].author.name.name, inline: true},
+				{name: 'Profile', value: `[Go to Overview](https://www.reddit.com/user/${modmail[0].messages[0].author.name.name}) ➡`, inline: true},
+				{name: 'Thread ID', value: modmail[0].id, inline: true},
+			)
+			.addFields(
+				{name: 'Link', value: `[Go to Thread](https://mod.reddit.com/mail/all/${modmail[0].id}) ➡`, inline: true},
+				{name: 'Responses', value: `✅ Accept | 👨 Man | ℹ Request Info | 🔄 Resend Invite \n 🔥 Archive | ❓ Second Opinion`}
+			)
+		/* Replace with Discord embed buttons */
 		client.channels.cache.get(config.modmailID).send(inviteEmbed).then(embed => {
 			embed.react('✅'),
 			embed.react('👨'),
@@ -58,6 +88,7 @@ function getModmail() {
 };
 
 client.on('messageReactionAdd', async (reaction, user) => {
+	/** Emoji Report Logic */
 	if (reaction.emoji.id === config.emojiID) {
 		reaction.remove();
 		if (reaction.message.partial) await reaction.message.fetch();
@@ -67,24 +98,26 @@ client.on('messageReactionAdd', async (reaction, user) => {
 			var message = 'Embedded Content'
 		}
 		const reportEmbed = new Discord.MessageEmbed()
-		.setColor(config.embedColor)
-		.setTitle('User Report')
-		.addFields(
-			{name: 'Message', value: message},
-			{name: 'Author', value: reaction.message.author.tag, inline: true},
-			{name: 'Channel', value: `#${reaction.message.channel.name}`, inline: true},
-			{name: 'Reported By', value: user.tag, inline: true},
-		)
-		.addFields(
-			{name: 'Link', value: `[Go to Message](https://discordapp.com/channels/${config.guildID}/${reaction.message.channel.id}/${reaction.message.id}) ➡`, inline: true},
-			{name: 'Response', value: '👍 Acknowledge', inline: true}
-		)
+			.setColor(config.embedColor)
+			.setTitle('User Report')
+			.addFields(
+				{name: 'Message', value: message},
+				{name: 'Author', value: reaction.message.author.tag, inline: true},
+				{name: 'Channel', value: `#${reaction.message.channel.name}`, inline: true},
+				{name: 'Reported By', value: user.tag, inline: true},
+			)
+			.addFields(
+				{name: 'Link', value: `[Go to Message](https://discordapp.com/channels/${config.guildID}/${reaction.message.channel.id}/${reaction.message.id}) ➡`, inline: true},
+				{name: 'Response', value: '👍 Acknowledge', inline: true}
+			)
 		client.channels.cache.get(config.channelID).send('@here', reportEmbed).then(embed => {
 			embed.react('👍')
 		});
 		user.send(config.message);
 		return;
 	};
+
+	/** Report Acknowledgement Logic */
 	if (reaction.emoji.name === '👍') {
 		if (reaction.message.partial) await reaction.message.fetch();
 		if (!reaction.message.author.bot) return;
@@ -98,6 +131,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		reaction.message.edit(reportEdit);
 		reaction.remove();
 	};
+
+	/** Invite Channel Reaction Logic */
 	if (reaction.emoji.name === '✅') {
 		if (reaction.message.partial) await reaction.message.fetch();
 		if (!reaction.message.author.bot) return;
@@ -166,19 +201,17 @@ client.on('messageReactionAdd', async (reaction, user) => {
 });
 
 client.on('message', async (message) => {
-
+	/** Ignore Logic */
 	if (message.author.bot) return;
-
 	if (message.guild === null) return;
-
 	if (message.content.indexOf(config.prefix) !== 0) return;
 	if (!message.member) return;
-	  
 	if (!(message.member.roles.cache.has(config.modID) || message.member.roles.cache.has(config.communityID))) return;
 
 	const args = message.content.slice(config.prefix.length).trim().split(/ +/)
 	const command = args.shift().toLowerCase()
 
+	/**  */
 	if (command === 'invite') {
 		if (!args.length) {
 			return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
