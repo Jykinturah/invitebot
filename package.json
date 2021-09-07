@@ -1,6 +1,6 @@
 {
   "name": "reportbot",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Discord bot that allows users to report messages by adding a reaction",
   "main": "index.js",
   "dependencies": {
