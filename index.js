@@ -39,7 +39,7 @@ client.once('ready', () => {
 });
 
 client.on('ready', () => {
-	Members();
+	pruneMembers();
 	client.setInterval(pruneMembers, intervalPrune);
 	getModmail();
 	client.setInterval(getModmail, intervalModmail);
