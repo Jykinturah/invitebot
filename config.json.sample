@@ -1,22 +1,18 @@
 {
-    "token": "[Discord Bot Token]",
+    "token": "Discord Bot Token",
+
+    "discordBotClientID": "NEW! Discord Bot ID",
+    "discordGuildID": "NEW! Discord Server ID for where the bot will run.",
+
     "embedColor": "#7289DA",
-    "emojiID": "[Report Emoji ID]",
-    "guildID": "[Discord Server ID]",
-    "channelID": "[Discord Report Channel ID]",
-    "message": "Thank you for your report! Our mod team will get to it as soon as possible.",
-    "movieID": "[]",
-    "modID": "[Discord Moderator Role ID]",
-    "communityID": "[Discord Community Role ID]",
+    "secondOpinionColor": "#e91e63",
+    "modID": "Moderator Role ID",
+    "communityID": "Community Role ID",
     "prefix": "!",
-    "inviteID": "[Discord New Invites Channel ID]",
-    "modmailID": "[Discord Invites Modmail Channel ID]",
-	"clientId": "[Reddit API Client ID]",
-    "clientSecret": "[Reddit API Client Sercet]",
-    "refreshToken": "[Reddit API Refresh Token]",
-    "intervalModmail": "30",
-    "intervalPrune": "3600",
-    "shameID": "[Discord Shame Role ID]",
-    "reportID": "[Discord Reports Channel ID]",
-    "inviteLogID": "[Discord Invite Log Channel ID]"
+    "inviteID": "Welcome Channel ID for Invite Links",
+    "modmailID": "Invite Channel ID for Moderators to Audit",
+    "clientId": "Snoowrap Reddit API Client ID",
+    "clientSecret": "Snoowrap Reddit API Client Secret",
+    "refreshToken": "Snoowrap Reddit API Refresh Token",
+    "intervalModmail": "30"
 }

@@ -1,33 +1,31 @@
 {
-  "name": "reportbot",
-  "version": "1.0.3",
-  "description": "Discord bot that allows users to report messages by adding a reaction",
-  "main": "index.js",
-  "dependencies": {
-    "discord.js": "^13.1.0",
-    "har-validator": "^5.1.5",
-    "sequelize": "^6.3.5",
-    "snoowrap": "^1.23.0",
-    "uuid": "^8.3.2"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/byeuji/reportbot.git"
-  },
-  "author": "Byeuji <byeuji@girlgamers.org>",
-  "contributors": [
-    {
-      "name": "Jykinturah",
-      "email": "dev@jyk.me",
-      "url": "https://github.com/Jykinturah"
-    }
-  ],
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/byeuji/reportbot/issues"
-  },
-  "homepage": "https://github.com/byeuji/reportbot#readme"
+    "name": "reportbot",
+    "version": "1.0.3",
+    "description": "Discord bot that allows users to report messages by adding a reaction",
+    "main": "index.js",
+    "dependencies": {
+        "discord.js": "^13.1.0",
+        "har-validator": "^5.1.5",
+        "sequelize": "^6.3.5",
+        "snoowrap": "^1.23.0",
+        "uuid": "^8.3.2"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/byeuji/reportbot.git"
+    },
+    "author": "Byeuji <byeuji@girlgamers.org>",
+    "contributors": [{
+        "name": "Jykinturah",
+        "email": "dev@jyk.me",
+        "url": "https://github.com/Jykinturah"
+    }],
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/byeuji/reportbot/issues"
+    },
+    "homepage": "https://github.com/byeuji/reportbot#readme"
 }
