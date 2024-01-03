@@ -4,7 +4,7 @@
     "description": "Discord bot that allows users to report messages by adding a reaction",
     "main": "index.js",
     "dependencies": {
-        "discord.js": "^13.1.0",
+        "discord.js": "^14.14.1",
         "har-validator": "^5.1.5",
         "sequelize": "^6.3.5",
         "snoowrap": "^1.23.0",
@@ -18,11 +18,13 @@
         "url": "git+https://github.com/byeuji/reportbot.git"
     },
     "author": "Byeuji <byeuji@girlgamers.org>",
-    "contributors": [{
-        "name": "Jykinturah",
-        "email": "dev@jyk.me",
-        "url": "https://github.com/Jykinturah"
-    }],
+    "contributors": [
+        {
+            "name": "Jykinturah",
+            "email": "dev@jyk.me",
+            "url": "https://github.com/Jykinturah"
+        }
+    ],
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/byeuji/reportbot/issues"

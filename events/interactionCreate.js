@@ -1,9 +1,9 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../config.json');
+'use strict';
 
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const config = require('../config.json');
+const { inviteLog } = require('../helpers/log');
+const { sendModmailInvite, sendModmailRejectMan, sendModmailRequestSocials, sendModmailReinvite, sendModmailArchive } = require("../helpers/reddit");
 
 module.exports = {
     name: 'interactionCreate',
@@ -16,38 +16,42 @@ module.exports = {
         if (interaction.channelId === config.modmailID) {
     
             /** Fetch Data from Embed */
-            let threadID = interaction.message.embeds[0].fields[2].value;
-            let invAuthor = interaction.message.embeds[0].fields[1].value
-            let channel = client.channels.cache.get(config.inviteID);
-            let logID = false; //Replace with Log Channel ID
+            const threadID = interaction.message.embeds[0].fields[3].value;
+            const invAuthor = interaction.message.embeds[0].fields[1].value;
+            const client = interaction.client;
+            const channel = client.channels.cache.get(config.inviteID);
+            const user = interaction.user;
     
             if (interaction.customId === 'invite') {
                 await interaction.reply({
-                    content: `Invited ${invAuthor}.`,
+                    content: `Inviting ${invAuthor}.`,
                     ephemeral: true
                 });
-                channel.createInvite({
-                    maxUses: 1,
-                    unique: true
-                }).then(invite => {
-                    sendModMail(threadID, `Hi! \n\nThanks for applying to join the r/GirlGamers Discord \n\n*Link expires in 24 hours; feel free to ask for another if needed* \n\nhttps://discord.gg/${invite.code}`);
+
+                channel.createInvite({ maxUses: 1, unique: true }).then(invite => {
+                    sendModmailInvite(user,threadID,invite.code);
                 });
-                if (logID) client.channels.cache.get(logID).send(`✅ Invited Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
+                inviteLog(client, `✅ Invited Reddit User ${invAuthor} and archived Thread ID ${threadID}.`)
+
                 interaction.message.delete();
             };
     
             if (interaction.customId === 'reinvite') {
                 await interaction.reply({
-                    content: `Re-invited ${invAuthor}.`,
+                    content: `Re-inviting ${invAuthor}.`,
                     ephemeral: true
                 });
+
                 channel.createInvite({
                     maxUses: 1,
                     unique: true
                 }).then(invite => {
-                    sendModMail(threadID, `Here's another invite \n\nhttps://discord.gg/${invite.code}`);
+                    sendModmailReinvite(user,threadID,invite.code);
                 });
-                if (logID) client.channels.cache.get(logID).send(`🔄 Re-invited Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
+                inviteLog(client, `🔄 Re-invited Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
                 interaction.message.delete();
             };
     
@@ -56,8 +60,11 @@ module.exports = {
                     content: `Requesting Socials from ${invAuthor}.`,
                     ephemeral: true
                 });
-                sendModMail(threadID, `Thanks for applying; however, due to your posting history we will need more information. \n\nDo you mind providing a link to a public text-based social media (not TikTok or Instagram) to verify? \n\nPlease note that we aren't looking for photo or voice verification, \nwe want to make sure we're inviting users that contribute to a positive and supportive environment.`);
-                if (logID) client.channels.cache.get(logID).send(`ℹ Requested Socials from Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
+                sendModmailRequestSocials(user,threadID);
+
+                inviteLog(client, `ℹ Requested Socials from Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
                 interaction.message.delete();
             };
     
@@ -66,25 +73,50 @@ module.exports = {
                     content: `Requesting Second Opinion.`,
                     ephemeral: true
                 });
-                let getInvite = interaction.message.embeds[0].spliceFields(5, 1);
-                let inviteRow1 = new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton().setCustomId("invite").setLabel("Invite").setStyle('SUCCESS'),
-                    new Discord.MessageButton().setCustomId("reinvite").setLabel("Re-invite").setStyle('SUCCESS'),
-                    new Discord.MessageButton().setCustomId("requestSocials").setLabel("Request Socials").setStyle('PRIMARY')
-                );
-                let inviteRow2 = new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton().setCustomId("manReject").setLabel("Man").setStyle('DANGER'),
-                    new Discord.MessageButton().setCustomId("archive").setLabel("Dismiss").setStyle('DANGER')
-                );
-                let inviteRow3 = new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton().setCustomId("secondOpinion").setLabel(`2nd Opinion Requested by ${interaction.member.user.tag}`).setStyle('DANGER').setDisabled(true)
-                );
-                if (logID) client.channels.cache.get(logID).send(`❓ Requested 2nd Opinion for ${invAuthor} and Thread ID ${threadID}.`);
+
+                const getInvite = new EmbedBuilder(interaction.message.embeds[0]).spliceFields(5, 1);
+
+                const inviteButton = new ButtonBuilder()
+                    .setCustomId('invite')
+                    .setLabel('Invite')
+                    .setStyle(ButtonStyle.Success);
+                
+                const reinviteButton =  new ButtonBuilder()
+                    .setCustomId('reinvite')
+                    .setLabel('Re-invite')
+                    .setStyle(ButtonStyle.Success);
+
+                const requestSocialButton =  new ButtonBuilder()
+                    .setCustomId('requestSocials')
+                    .setLabel('Request Socials')
+                    .setStyle(ButtonStyle.Primary)
+                
+                const manRejectButton = new ButtonBuilder()
+                    .setCustomId('manReject')
+                    .setLabel('Man')
+                    .setStyle(ButtonStyle.Danger);
+                
+                const dismissButton = new ButtonBuilder()
+                    .setCustomId('archive')
+                    .setLabel('Dismiss')
+                    .setStyle(ButtonStyle.Danger);
+                
+                const secondOpinionButton =  new ButtonBuilder()
+                    .setCustomId("secondOpinion")
+                    .setLabel(`2nd Opinion Requested by ${interaction.member.user.tag}`)
+                    .setStyle(ButtonStyle.Danger)
+                    .setDisabled(true)
+
+                const buttonRow1 = new ActionRowBuilder().addComponents(inviteButton,reinviteButton,requestSocialButton);
+                const buttonRow2 = new ActionRowBuilder().addComponents(manRejectButton,dismissButton);
+                const buttonRow3 = new ActionRowBuilder().addComponents(secondOpinionButton);
+
+                inviteLog(client, `❓ Requested 2nd Opinion for ${invAuthor} and Thread ID ${threadID}.`);
+
                 interaction.message.edit({
                     embeds: [getInvite],
-                    components: [inviteRow1, inviteRow2, inviteRow3]
+                    components: [buttonRow1, buttonRow2, buttonRow3]
                 });
-                /* Create Thread? */
             };
     
             if (interaction.customId === 'manReject') {
@@ -92,8 +124,11 @@ module.exports = {
                     content: `Rejecting ${invAuthor}.`,
                     ephemeral: true
                 });
-                sendModMail(threadID, 'Hi! \n\nThanks for applying; however, this is a female-identifying space so we will have to decline.');
-                if (logID) client.channels.cache.get(logID).send(`👨 Rejected Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
+                sendModmailRejectMan(user,threadID);
+
+                inviteLog(client, `👨 Rejected Reddit User ${invAuthor} and archived Thread ID ${threadID}.`);
+
                 interaction.message.delete();
             };
     
@@ -102,8 +137,11 @@ module.exports = {
                     content: `Archiving ${threadID}.`,
                     ephemeral: true
                 });
-                r.getNewModmailConversation(threadID).archive();
-                if (logID) client.channels.cache.get(logID).send(`🔥 Archiving Thread ID ${threadID}.`);
+
+                sendModmailArchive(user,threadID);
+
+                inviteLog(client, `🔥 Archiving Thread ID ${threadID}.`);
+
                 interaction.message.delete();
             };
         };

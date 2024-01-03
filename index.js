@@ -9,15 +9,16 @@
  * GatewayIntentBits.GuildMessageReactions
  * 	Bot uses reactions for report system and for the invite verifications system.
  */
-
-const { EmbedBuilder, Client, GatewayIntentBits } = require('discord.js');
+const fs = require('node:fs');
+const path = require('node:path');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const config = require('./config.json');
-const snoowrap = require('snoowrap');
+
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions]
 });
 
-const { getModMail, sendModMail } = require('./helpers/reddit.js');
+const { syncModmail } = require('./helpers/reddit.js');
 
 var intervalModmail = (config.intervalModmail * 1000);
 
@@ -27,18 +28,9 @@ client.once('ready', () => {
 
 client.on('ready', () => {
     // Query Reddit Modmail on client ready
-    getModmail();
+    syncModmail(client);
     // Query Reddit Modmail every [intervalModmail] seconds
-    setInterval(getModmail, intervalModmail);
-});
-
-
-/** Reddit API Wrapper */
-const r = new snoowrap({
-    userAgent: 'invite-bot',
-    clientId: config.clientId,
-    clientSecret: config.clientSecret,
-    refreshToken: config.refreshToken
+    setInterval(syncModmail, intervalModmail, client);
 });
 
 client.commands = new Collection();
