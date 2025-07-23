@@ -3,14 +3,11 @@
     "embedColor": "#7289DA",
     "secondOpinionColor": "#e91e63",
     "modID": ["Moderator Role ID 1","Moderator Role ID 2"],
-    "communityID": "Community Role ID",
     "prefix": "!",
     "inviteID": "Welcome Channel ID for Invite Links",
-    "modmailID": "Invite Channel ID for Moderators to Audit",
+    "modmailID": "Channel ID for Moderators to Audit Invite Requests",
 	"clientId": "Snoowrap Reddit API Client ID",
     "clientSecret": "Snoowrap Reddit API Client Secret",
     "refreshToken": "Snoowrap Reddit API Refresh Token",
-    "intervalModmail": "30",
-    "shameID": "Shame Role ID",
-    "reportID": "Report Channel ID for Created Reports"
+    "intervalModmail": "30"
 }
