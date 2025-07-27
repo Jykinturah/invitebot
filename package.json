@@ -1,7 +1,7 @@
 {
-    "name": "reportbot",
-    "version": "1.0.3",
-    "description": "Discord bot that allows users to report messages by adding a reaction",
+    "name": "invitebot",
+    "version": "1.1.0",
+    "description": "Discord bot for managing invite requests from Reddit Modmail",
     "main": "index.js",
     "dependencies": {
         "discord.js": "^14.21.0",
