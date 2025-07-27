@@ -1,23 +1,18 @@
 'use strict';
 
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const { sendModMailReply } = require('../helpers/reddit.js');
+const { convertModMail } = require('../helpers/reddit.js');
 const { isUserMod } = require('../helpers/utilities.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('reply')
+        .setName('convert')
         .setDMPermission(false)
-        .setDescription('Send Reply to ModMail Thread ID (Moderator Only)')
+        .setDescription('Convert Invite Embed (Moderator Only)')
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .addStringOption(option =>
             option.setName('threadid')
                 .setDescription('ModMail Thread ID')
-                .setRequired(true),
-        )
-        .addStringOption(option =>
-            option.setName('message')
-                .setDescription('Reply Message')
                 .setRequired(true),
         ),
     async execute(interaction) {
@@ -29,27 +24,17 @@ module.exports = {
                 flags: MessageFlags.Ephemeral,
             });
         } else {
-            const modmailThreadID = interaction.options.getString('threadid');
 
-            // Verify ThreadID Length just in case
+            // Verify ThreadID length just in case
+            const modmailThreadID = interaction.options.getString('threadid');
             if (modmailThreadID.length < 5 || modmailThreadID.length > 7) {
                 await interaction.reply({
                     content: 'Thread ID seems to be the wrong length, please check it!',
                     flags: MessageFlags.Ephemeral,
                 });
             } else {
-
-                // Try to fetch the Modmail and reply to it
-                const modmailReplyMessage = interaction.options.getString('message');
-                if (modmailReplyMessage.length > 0) {
-                    await sendModMailReply(interaction.user, modmailThreadID, modmailReplyMessage, interaction)
-                } else {
-                    await interaction.reply({
-                        content: 'There seems to be an error with the message, please check it!',
-                        flags: MessageFlags.Ephemeral,
-                    });
-                }
+                await convertModMail(modmailThreadID, interaction)
             }
         }
     },
-};
+}

@@ -4,11 +4,10 @@
     "description": "Discord bot that allows users to report messages by adding a reaction",
     "main": "index.js",
     "dependencies": {
-        "discord.js": "^14.14.1",
-        "har-validator": "^5.1.5",
-        "sequelize": "^6.3.5",
-        "snoowrap": "^1.23.0",
-        "uuid": "^8.3.2"
+        "discord.js": "^14.21.0",
+        "sequelize": "^6.37.7",
+        "snoowrap": "^1.15.2",
+        "uuid": "^11.1.0"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -29,5 +28,12 @@
     "bugs": {
         "url": "https://github.com/byeuji/reportbot/issues"
     },
-    "homepage": "https://github.com/byeuji/reportbot#readme"
+    "homepage": "https://github.com/byeuji/reportbot#readme",
+    "devDependencies": {
+        "@eslint/js": "^9.32.0",
+        "@eslint/json": "^0.13.1",
+        "@stylistic/eslint-plugin": "^5.2.2",
+        "eslint": "^9.32.0",
+        "globals": "^16.3.0"
+    }
 }
